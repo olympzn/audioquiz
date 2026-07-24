@@ -1,5 +1,5 @@
 {
-  "name": "AudioQuiz",
+  "name": "Dioquiz",
   "description": "Jogo estilo Termo: adivinhe o filme ouvindo um curto clipe de áudio da cena. Adicione seus próprios áudios e vídeos para personalizar o jogo.",
   "requestFramePermissions": [],
   "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]

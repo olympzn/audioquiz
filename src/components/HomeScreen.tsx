@@ -1,75 +1,203 @@
 import React from 'react';
-import { Film, Swords, Wand2, MonitorPlay, ArrowUpRight } from 'lucide-react';
+import { Film, Swords, Wand2, MonitorPlay, ArrowUpRight, Volume2, HelpCircle, CheckCircle2 } from 'lucide-react';
 import { motion } from 'motion/react';
 
 export default function HomeScreen({ onSelect }: { onSelect: (category: string) => void }) {
+  const currentYear = new Date().getFullYear();
+
   return (
-    <div className="min-h-screen bg-[#10141a] text-slate-50 selection:bg-[#a9f442]/30 overflow-x-hidden relative font-sans">
+    <div className="min-h-screen bg-[#0a0d12] text-slate-50 selection:bg-[#a9f442]/30 overflow-x-hidden relative font-sans flex flex-col">
       
       {/* Background Glows */}
-      <div className="fixed top-1/4 left-0 w-[400px] h-[400px] bg-[#a9f442]/20 rounded-full blur-[140px] pointer-events-none -translate-x-1/2"></div>
-      <div className="fixed bottom-1/4 right-0 w-[500px] h-[500px] bg-[#a9f442]/10 rounded-full blur-[140px] pointer-events-none translate-x-1/3"></div>
+      <div className="fixed top-0 left-1/4 w-[500px] h-[500px] bg-[#a9f442]/10 rounded-full blur-[150px] pointer-events-none -translate-x-1/2"></div>
+      <div className="fixed bottom-0 right-1/4 w-[600px] h-[600px] bg-[#a9f442]/5 rounded-full blur-[150px] pointer-events-none translate-x-1/2"></div>
 
-      <div className="max-w-[1400px] mx-auto px-4 w-full flex flex-col lg:flex-row items-center lg:items-start justify-center gap-8 min-h-screen py-8 lg:py-24 relative z-10">
-        {/* Espaço para Anúncio Mobile (Topo) */}
-        <div className="flex lg:hidden w-full h-[100px] bg-[#1a2027]/80 border border-slate-700/50 rounded-2xl flex-col items-center justify-center shrink-0 mb-4">
-          <span className="text-slate-500 font-bold tracking-widest uppercase text-xs">Espaço para</span>
-          <span className="text-[#a9f442] font-black tracking-widest uppercase text-lg mt-1">Anúncio</span>
-        </div>
-
-        {/* Espaço para Anúncio Esquerdo */}
-        <aside className="hidden lg:flex w-[300px] h-[600px] bg-[#1a2027]/80 border border-slate-700/50 rounded-3xl flex-col items-center justify-center shrink-0 lg:sticky top-24">
-          <span className="text-slate-500 font-bold tracking-widest uppercase text-xs">Espaço para</span>
-          <span className="text-[#a9f442] font-black tracking-widest uppercase text-lg mt-1">Anúncio</span>
-        </aside>
-
-        <main className="w-full max-w-4xl flex flex-col items-center justify-center shrink">
-          <motion.div 
-            initial={{ opacity: 0, y: -20 }}
-            animate={{ opacity: 1, y: 0 }}
-            className="text-center mb-16"
-          >
-            <h1 className="text-5xl md:text-6xl font-black tracking-widest text-white uppercase mb-4">
-              AUDIOQUIZ
-            </h1>
-            <p className="text-slate-400 text-lg mx-auto uppercase tracking-wide">
-              O jogo onde você adivinha o filme pelo som
-            </p>
-          </motion.div>
-
-          <div className="flex flex-wrap justify-center gap-4 md:gap-6 w-full max-w-3xl mb-12">
-            <CategoryButton 
-              icon={<img src="/marvellogo.png" alt="Marvel" className="w-16 h-auto object-contain" />}
-              title="MUNDO MARVEL"
-              videoBg="/marvel-bg.mp4"
-              onClick={() => onSelect('marvel')}
-            />
-            <CategoryButton 
-              icon={<img src="/disneylogo.png" alt="Disney" className="w-16 h-auto object-contain" />}
-              title="MUNDO DISNEY"
-              videoBg="/abedisney.mp4"
-              onClick={() => onSelect('disney')}
-            />
-            <CategoryButton 
-              icon={<MonitorPlay size={40} className="text-[#a9f442]" />}
-              title="CLÁSSICOS"
-              onClick={() => onSelect('classicos')}
-            />
+      {/* Main Content Area */}
+      <div className="flex-grow flex flex-col relative z-10">
+        
+        {/* Header */}
+        <header className="w-full bg-[#161b22]/80 backdrop-blur-md border-b border-slate-800 sticky top-0 z-50">
+          <div className="max-w-[1400px] mx-auto px-4 h-20 flex items-center justify-between">
+            <div className="flex items-center gap-3">
+              <img src="/dioquizlogo.png" alt="Dioquiz" className="h-10 md:h-12 w-auto object-contain drop-shadow-[0_0_10px_rgba(169,244,66,0.3)]" />
+              <span className="text-xl md:text-2xl font-black tracking-widest uppercase text-white hidden sm:block">Dioquiz</span>
+            </div>
+            <nav className="hidden md:flex gap-6">
+              <button className="text-sm font-bold uppercase tracking-widest text-slate-400 hover:text-[#a9f442] transition-colors">Como Jogar</button>
+              <button className="text-sm font-bold uppercase tracking-widest text-slate-400 hover:text-[#a9f442] transition-colors">Categorias</button>
+            </nav>
           </div>
+        </header>
 
-          {/* Espaço para Anúncio Mobile (Base) */}
-          <div className="flex lg:hidden w-full h-[100px] bg-[#1a2027]/80 border border-slate-700/50 rounded-2xl flex-col items-center justify-center shrink-0 mt-4 mb-4">
+        <div className="max-w-[1400px] mx-auto px-4 w-full flex flex-col items-center justify-start gap-12 pt-8 md:pt-12 pb-24">
+          {/* Espaço para Anúncio Mobile (Topo) */}
+          <div className="flex w-full max-w-4xl h-[100px] bg-[#1a2027]/80 border border-slate-700/50 rounded-2xl flex-col items-center justify-center shrink-0 mx-auto mt-4">
             <span className="text-slate-500 font-bold tracking-widest uppercase text-xs">Espaço para</span>
             <span className="text-[#a9f442] font-black tracking-widest uppercase text-lg mt-1">Anúncio</span>
           </div>
-        </main>
 
-        {/* Espaço para Anúncio Direito */}
-        <aside className="hidden lg:flex w-[300px] h-[600px] bg-[#1a2027]/80 border border-slate-700/50 rounded-3xl flex-col items-center justify-center shrink-0 lg:sticky top-24">
-          <span className="text-slate-500 font-bold tracking-widest uppercase text-xs">Espaço para</span>
-          <span className="text-[#a9f442] font-black tracking-widest uppercase text-lg mt-1">Anúncio</span>
-        </aside>
+          {/* Hero Section */}
+          <motion.div 
+            initial={{ opacity: 0, y: -20 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="text-center w-full max-w-4xl mt-4"
+          >
+            <h1 className="text-4xl md:text-5xl lg:text-6xl font-black tracking-widest text-white uppercase mb-6 drop-shadow-[0_0_20px_rgba(169,244,66,0.2)]">
+              Descubra o Filme <br/> <span className="text-[#a9f442]">Pelo Som</span>
+            </h1>
+            <p className="text-slate-400 text-lg md:text-xl mx-auto uppercase tracking-widest font-medium">
+              Teste seus conhecimentos cinematográficos!
+            </p>
+          </motion.div>
+
+        <div className="w-full flex flex-col lg:flex-row items-center lg:items-start justify-center gap-8 mt-4">
+          {/* Espaço para Anúncio Esquerdo */}
+          <aside className="hidden lg:flex w-[250px] xl:w-[300px] h-[600px] bg-[#1a2027]/80 border border-slate-700/50 rounded-3xl flex-col items-center justify-center shrink-0 lg:sticky top-24">
+            <span className="text-slate-500 font-bold tracking-widest uppercase text-xs">Espaço para</span>
+            <span className="text-[#a9f442] font-black tracking-widest uppercase text-lg mt-1">Anúncio</span>
+          </aside>
+
+          {/* Categories */}
+          <main className="w-full max-w-3xl flex flex-col items-center justify-center">
+            <motion.div 
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ delay: 0.4 }}
+              className="w-full"
+            >
+              <h2 className="text-center text-xl font-black text-[#a9f442] uppercase tracking-widest mb-8">Escolha sua Categoria</h2>
+              <div className="flex flex-wrap justify-center gap-6 w-full mb-12">
+                <CategoryButton 
+                  icon={<img src="/marvellogo.png" alt="Marvel" className="w-16 h-auto object-contain" />}
+                  title="MUNDO MARVEL"
+                  videoBg="/marvel-bg.mp4"
+                  onClick={() => onSelect('marvel')}
+                />
+                <CategoryButton 
+                  icon={<img src="/disneylogo.png" alt="Disney" className="w-16 h-auto object-contain" />}
+                  title="MUNDO DISNEY"
+                  videoBg="/abedisney.mp4"
+                  onClick={() => onSelect('disney')}
+                />
+                <CategoryButton 
+                  icon={<MonitorPlay size={40} className="text-[#a9f442]" />}
+                  title="CLÁSSICOS"
+                  onClick={() => onSelect('classicos')}
+                />
+              </div>
+            </motion.div>
+
+            {/* Espaço para Anúncio Mobile (Base) */}
+            <div className="flex lg:hidden w-full h-[250px] bg-[#1a2027]/80 border border-slate-700/50 rounded-2xl flex-col items-center justify-center shrink-0 mt-4 mb-4">
+              <span className="text-slate-500 font-bold tracking-widest uppercase text-xs">Espaço para</span>
+              <span className="text-[#a9f442] font-black tracking-widest uppercase text-lg mt-1">Anúncio</span>
+            </div>
+          </main>
+
+          {/* Espaço para Anúncio Direito */}
+          <aside className="hidden lg:flex w-[250px] xl:w-[300px] h-[600px] bg-[#1a2027]/80 border border-slate-700/50 rounded-3xl flex-col items-center justify-center shrink-0 lg:sticky top-24">
+            <span className="text-slate-500 font-bold tracking-widest uppercase text-xs">Espaço para</span>
+            <span className="text-[#a9f442] font-black tracking-widest uppercase text-lg mt-1">Anúncio</span>
+          </aside>
+        </div>
+
+        {/* How it works */}
+        <motion.div 
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.6, duration: 0.6, ease: "easeOut" }}
+          className="w-full max-w-4xl mt-12"
+        >
+          <div className="text-center mb-8">
+            <h2 className="text-2xl font-black text-white uppercase tracking-widest">Como Funciona</h2>
+          </div>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 md:gap-6">
+            
+            <div className="bg-[#161b22]/80 border border-slate-800 rounded-2xl p-6 flex flex-col items-start gap-4 transition-colors hover:bg-[#1a2027]/90 hover:border-slate-700 overflow-hidden group">
+              <div className="w-full h-24 bg-[#1a2027] rounded-xl border border-slate-700/50 flex flex-col items-center justify-center relative">
+                 <div className="absolute inset-0 bg-gradient-to-br from-blue-500/5 to-transparent rounded-xl" />
+                 <div className="flex items-end gap-1.5 h-8">
+                    {[1, 2, 3, 4, 5].map((i) => (
+                      <motion.div 
+                        key={i}
+                        animate={{ height: ["20%", "100%", "40%", "80%", "30%"] }} 
+                        transition={{ repeat: Infinity, duration: 1.5, ease: "easeInOut", delay: i * 0.15 }} 
+                        className="w-1.5 bg-blue-400 rounded-full" 
+                      />
+                    ))}
+                 </div>
+                 <Volume2 size={16} className="text-slate-500 absolute bottom-3 right-3" />
+              </div>
+              <div>
+                <span className="text-[10px] font-black text-slate-500 uppercase tracking-widest mb-1 block">Passo 01</span>
+                <h3 className="text-base font-bold text-slate-200 mb-2">Ouça o Áudio</h3>
+                <p className="text-sm text-slate-400">Preste atenção aos detalhes sonoros, vozes e efeitos de fundo.</p>
+              </div>
+            </div>
+
+            <div className="bg-[#161b22]/80 border border-slate-800 rounded-2xl p-6 flex flex-col items-start gap-4 transition-colors hover:bg-[#1a2027]/90 hover:border-slate-700 overflow-hidden group">
+               <div className="w-full h-24 bg-[#1a2027] rounded-xl border border-slate-700/50 flex flex-col items-center justify-center relative">
+                 <div className="absolute inset-0 bg-gradient-to-br from-purple-500/5 to-transparent rounded-xl" />
+                 
+                 <div className="flex items-center gap-2 w-1/2">
+                   <motion.div animate={{ scale: [1, 1.2, 1] }} transition={{ repeat: Infinity, duration: 2 }} className="w-3 h-3 rounded-full bg-slate-500 shrink-0" />
+                   <motion.div 
+                     className="h-[2px] bg-gradient-to-r from-slate-500 to-purple-400 w-full origin-left" 
+                     animate={{ scaleX: [0, 1, 1, 0], opacity: [0, 1, 1, 0], originX: [0, 0, 1, 1] }} 
+                     transition={{ repeat: Infinity, duration: 2, times: [0, 0.4, 0.6, 1] }} 
+                   />
+                   <motion.div animate={{ scale: [1, 1.3, 1], backgroundColor: ["#64748b", "#c084fc", "#64748b"] }} transition={{ repeat: Infinity, duration: 2, delay: 0.8 }} className="w-3 h-3 rounded-full bg-slate-500 shrink-0 shadow-[0_0_10px_rgba(192,132,252,0.5)]" />
+                 </div>
+
+                 <HelpCircle size={16} className="text-slate-500 absolute bottom-3 right-3" />
+              </div>
+              <div>
+                <span className="text-[10px] font-black text-slate-500 uppercase tracking-widest mb-1 block">Passo 02</span>
+                <h3 className="text-base font-bold text-slate-200 mb-2">Conecte as Pistas</h3>
+                <p className="text-sm text-slate-400">Use seu conhecimento cinematográfico para identificar o filme.</p>
+              </div>
+            </div>
+
+            <div className="bg-[#161b22]/80 border border-slate-800 rounded-2xl p-6 flex flex-col items-start gap-4 transition-colors hover:bg-[#1a2027]/90 hover:border-slate-700 overflow-hidden group">
+               <div className="w-full h-24 bg-[#1a2027] rounded-xl border border-slate-700/50 flex flex-col items-center justify-center relative px-6">
+                 <div className="absolute inset-0 bg-gradient-to-br from-[#a9f442]/5 to-transparent rounded-xl" />
+                 
+                 <div className="flex flex-col gap-2 w-full">
+                    <motion.div className="h-2 rounded-full bg-slate-700/50 w-full" animate={{ opacity: [0.5, 1, 0.5] }} transition={{ repeat: Infinity, duration: 3 }} />
+                    <motion.div className="h-2 rounded-full bg-[#a9f442]" animate={{ scaleX: [0.9, 1, 0.9], opacity: [0.5, 1, 1, 0.5], backgroundColor: ["#334155", "#334155", "#a9f442", "#334155"] }} transition={{ repeat: Infinity, duration: 3, times: [0, 0.4, 0.5, 1] }} />
+                    <motion.div className="h-2 rounded-full bg-slate-700/50 w-3/4" animate={{ opacity: [0.5, 1, 0.5] }} transition={{ repeat: Infinity, duration: 3, delay: 0.2 }} />
+                 </div>
+
+                 <CheckCircle2 size={16} className="text-[#a9f442] absolute bottom-3 right-3" />
+              </div>
+              <div>
+                <span className="text-[10px] font-black text-slate-500 uppercase tracking-widest mb-1 block">Passo 03</span>
+                <h3 className="text-base font-bold text-[#a9f442] mb-2">Dê seu Palpite</h3>
+                <p className="text-sm text-slate-400">Escolha uma das alternativas corretamente e avance de fase.</p>
+              </div>
+            </div>
+
+          </div>
+        </motion.div>
       </div>
+      </div>
+
+      {/* Footer */}
+      <footer className="w-full bg-[#161b22] border-t border-slate-800 py-8 relative z-20 mt-auto">
+        <div className="max-w-[1400px] mx-auto px-4 flex flex-col md:flex-row items-center justify-between gap-4">
+          <div className="text-slate-400 text-sm font-medium">
+            &copy; {currentYear} Dioquiz. Todos os direitos reservados.
+          </div>
+          <div className="flex flex-wrap items-center justify-center gap-4 md:gap-6">
+            <button className="text-slate-400 hover:text-[#a9f442] text-sm transition-colors uppercase tracking-wider font-bold">
+              Termos de Uso
+            </button>
+            <button className="text-slate-400 hover:text-[#a9f442] text-sm transition-colors uppercase tracking-wider font-bold">
+              Política de Privacidade
+            </button>
+          </div>
+        </div>
+      </footer>
     </div>
   );
 }
@@ -98,11 +226,14 @@ function CategoryButton({
 
   return (
     <motion.button
-      whileHover={{ scale: 1.02 }}
-      whileTap={{ scale: 0.98 }}
+      whileHover={{ scale: 1.05, y: -8 }}
+      whileTap={{ scale: 0.95 }}
       onClick={onClick}
-      className="w-[140px] h-[160px] md:w-[160px] md:h-[180px] rounded-3xl flex flex-col items-center justify-center p-4 bg-[#1a2027] border border-slate-700/50 transition-all group hover:bg-[#202730] shadow-lg relative overflow-hidden"
+      className="w-[140px] h-[160px] md:w-[160px] md:h-[180px] rounded-3xl flex flex-col items-center justify-center p-4 bg-[#1a2027] border border-slate-700/50 transition-all duration-300 group hover:bg-[#202730] shadow-lg hover:shadow-[0_10px_40px_rgba(169,244,66,0.3)] hover:border-[#a9f442]/50 relative overflow-hidden"
     >
+      {/* Shimmer sweep effect */}
+      <div className="absolute inset-0 bg-gradient-to-r from-transparent via-[#a9f442]/10 to-transparent -translate-x-[150%] group-hover:translate-x-[150%] transition-transform duration-1000 ease-in-out z-20 pointer-events-none skew-x-12"></div>
+
       {videoBg && (
         <video 
           ref={videoRef}
@@ -111,17 +242,20 @@ function CategoryButton({
           loop 
           muted 
           playsInline
-          className="absolute inset-0 w-full h-full object-cover opacity-20 group-hover:opacity-40 transition-opacity duration-300 pointer-events-none"
+          className="absolute inset-0 w-full h-full object-cover opacity-20 group-hover:opacity-60 group-hover:scale-110 transition-all duration-700 pointer-events-none"
         />
       )}
-      <div className="absolute top-0 left-0 w-full h-full bg-gradient-to-b from-[#a9f442]/5 to-[#1a2027]/90 opacity-0 group-hover:opacity-100 transition-opacity"></div>
-      <div className="mb-3 drop-shadow-[0_0_15px_rgba(169,244,66,0.4)] relative z-10">
+      <div className="absolute top-0 left-0 w-full h-full bg-gradient-to-b from-[#a9f442]/5 to-[#1a2027]/80 opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+      
+      <div className="mb-3 drop-shadow-[0_0_15px_rgba(169,244,66,0.4)] relative z-10 transition-transform duration-500 group-hover:scale-110 group-hover:-translate-y-2">
         {icon}
       </div>
-      <h2 className="text-xs md:text-sm font-bold text-slate-200 text-center uppercase tracking-wider relative z-10">
+      
+      <h2 className="text-xs md:text-sm font-bold text-slate-200 text-center uppercase tracking-wider relative z-10 transition-all duration-500 group-hover:-translate-y-1 group-hover:text-[#a9f442] group-hover:drop-shadow-[0_0_8px_rgba(169,244,66,0.5)]">
         {title}
       </h2>
-      <div className="absolute top-4 right-4 w-8 h-8 rounded-full bg-[#a9f442] text-[#10141a] flex items-center justify-center opacity-0 group-hover:opacity-100 transform -translate-x-2 translate-y-2 group-hover:translate-x-0 group-hover:translate-y-0 transition-all duration-300 z-10 shadow-lg">
+      
+      <div className="absolute top-4 right-4 w-8 h-8 rounded-full bg-[#a9f442] text-[#10141a] flex items-center justify-center opacity-0 group-hover:opacity-100 transform -translate-x-4 translate-y-4 group-hover:translate-x-0 group-hover:translate-y-0 transition-all duration-500 z-10 shadow-[0_0_15px_rgba(169,244,66,0.6)]">
         <ArrowUpRight size={18} strokeWidth={3} />
       </div>
     </motion.button>

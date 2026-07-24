@@ -132,7 +132,7 @@ export default function GameScreen({
             <div className="bg-[#a9f442]/10 p-2 rounded-xl text-[#a9f442] hidden sm:block border border-[#a9f442]/20">
               <Film size={24} />
             </div>
-            <h1 className="text-xl font-black tracking-widest uppercase hidden sm:block">AudioQuiz</h1>
+            <img src="/dioquizlogo.png" alt="Dioquiz" className="h-8 w-auto hidden sm:block object-contain drop-shadow-[0_0_8px_rgba(169,244,66,0.2)]" />
             {category === 'marvel' ? (
               <img src="/marvellogo.png" alt="Marvel" className="h-6 w-auto sm:ml-2 object-contain" />
             ) : category === 'disney' ? (
