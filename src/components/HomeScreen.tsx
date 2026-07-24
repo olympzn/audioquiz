@@ -85,6 +85,17 @@ function CategoryButton({
   videoBg?: string;
   onClick: () => void;
 }) {
+  const videoRef = React.useRef<HTMLVideoElement>(null);
+
+  React.useEffect(() => {
+    if (videoRef.current) {
+      videoRef.current.defaultMuted = true;
+      videoRef.current.muted = true;
+      videoRef.current.loop = true;
+      videoRef.current.play().catch(e => console.log("Video play failed:", e));
+    }
+  }, []);
+
   return (
     <motion.button
       whileHover={{ scale: 1.02 }}
@@ -94,12 +105,13 @@ function CategoryButton({
     >
       {videoBg && (
         <video 
+          ref={videoRef}
           src={videoBg} 
           autoPlay 
           loop 
           muted 
           playsInline
-          className="absolute inset-0 w-full h-full object-cover opacity-20 group-hover:opacity-40 transition-opacity duration-300"
+          className="absolute inset-0 w-full h-full object-cover opacity-20 group-hover:opacity-40 transition-opacity duration-300 pointer-events-none"
         />
       )}
       <div className="absolute top-0 left-0 w-full h-full bg-gradient-to-b from-[#a9f442]/5 to-[#1a2027]/90 opacity-0 group-hover:opacity-100 transition-opacity"></div>
