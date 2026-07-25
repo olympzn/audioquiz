@@ -55,10 +55,9 @@ export default function ResultModal({
              {videoUrl ? (
                <video 
                  src={videoUrl} 
-                 controls 
                  autoPlay
                  playsInline
-                 className="w-full h-full object-contain"
+                 className="w-full h-full object-contain pointer-events-none"
                />
              ) : (
                <div className="w-full h-full flex flex-col items-center justify-center text-slate-600 bg-[#10141a]/50 p-6">
