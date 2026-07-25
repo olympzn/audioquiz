@@ -55,9 +55,9 @@ export const gameLevels: Record<string, Level[]> = {
     {
       id: 'm2',
       movieTitle: 'Os Vingadores',
-      options: ['Liga da Justiça', 'Vingadores: Era de Ultron', 'Os Vingadores', 'X-Men', 'Quarteto Fantástico'],
-      audioUrl: '',
-      videoUrl: '',
+      options: ['Homem de ferro 2', 'Vingadores: Era de Ultron', 'Os Vingadores', 'X-Men', 'Quarteto Fantástico'],
+      audioUrl: 'mmv2.mp3',
+      videoUrl: 'mmv2.mp4',
     },
     {
       id: 'm3',
