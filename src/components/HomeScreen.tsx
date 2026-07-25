@@ -1,13 +1,74 @@
-import React from 'react';
-import { Film, Swords, Wand2, MonitorPlay, ArrowUpRight, Volume2, HelpCircle, CheckCircle2 } from 'lucide-react';
-import { motion } from 'motion/react';
+import React, { useState } from 'react';
+import { Film, Swords, Wand2, MonitorPlay, ArrowUpRight, Volume2, HelpCircle, CheckCircle2, X } from 'lucide-react';
+import { motion, AnimatePresence } from 'motion/react';
+import { Difficulty } from '../types';
 
-export default function HomeScreen({ onSelect }: { onSelect: (category: string) => void }) {
+export default function HomeScreen({ onSelect }: { onSelect: (category: string, difficulty: Difficulty) => void }) {
   const currentYear = new Date().getFullYear();
+  const [selectedCategoryForDiff, setSelectedCategoryForDiff] = useState<string | null>(null);
+
+  const handleDifficultySelect = (diff: Difficulty) => {
+    if (selectedCategoryForDiff) {
+      onSelect(selectedCategoryForDiff, diff);
+      setSelectedCategoryForDiff(null);
+    }
+  };
 
   return (
     <div className="min-h-screen bg-[#0a0d12] text-slate-50 selection:bg-[#a9f442]/30 overflow-x-hidden relative font-sans flex flex-col">
-      
+      <AnimatePresence>
+        {selectedCategoryForDiff && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 z-[60] flex items-center justify-center p-4 bg-[#0a0d12]/90 backdrop-blur-md"
+          >
+            <motion.div
+              initial={{ scale: 0.95, opacity: 0, y: 10 }}
+              animate={{ scale: 1, opacity: 1, y: 0 }}
+              exit={{ scale: 0.95, opacity: 0, y: 10 }}
+              className="bg-[#1a2027] border border-slate-700/50 p-6 md:p-8 rounded-3xl max-w-xl w-full shadow-2xl relative overflow-hidden"
+            >
+              <button 
+                onClick={() => setSelectedCategoryForDiff(null)}
+                className="absolute top-4 right-4 text-slate-400 hover:text-white bg-slate-800/50 p-2 rounded-full transition-colors"
+              >
+                <X size={20} />
+              </button>
+              
+              <h2 className="text-2xl font-black text-[#a9f442] uppercase tracking-widest mb-6 text-center">Selecione a Dificuldade</h2>
+              
+              <div className="flex flex-col gap-4">
+                <button 
+                  onClick={() => handleDifficultySelect('facil')}
+                  className="bg-[#161b22] border border-slate-700 hover:border-[#a9f442] p-4 rounded-xl flex flex-col items-start transition-all group"
+                >
+                  <span className="text-[#a9f442] font-black uppercase tracking-widest text-lg mb-1 group-hover:scale-105 origin-left transition-transform">Fácil</span>
+                  <span className="text-slate-400 text-sm text-left">As alternativas serão mostradas para você escolher.</span>
+                </button>
+
+                <button 
+                  onClick={() => handleDifficultySelect('medio')}
+                  className="bg-[#161b22] border border-slate-700 hover:border-amber-400 p-4 rounded-xl flex flex-col items-start transition-all group"
+                >
+                  <span className="text-amber-400 font-black uppercase tracking-widest text-lg mb-1 group-hover:scale-105 origin-left transition-transform">Médio</span>
+                  <span className="text-slate-400 text-sm text-left">Sem alternativas! Você precisará digitar o nome do filme.</span>
+                </button>
+
+                <button 
+                  onClick={() => handleDifficultySelect('dificil')}
+                  className="bg-[#161b22] border border-slate-700 hover:border-rose-500 p-4 rounded-xl flex flex-col items-start transition-all group"
+                >
+                  <span className="text-rose-500 font-black uppercase tracking-widest text-lg mb-1 group-hover:scale-105 origin-left transition-transform">Difícil</span>
+                  <span className="text-slate-400 text-sm text-left">Digite o nome. Se errar uma vez, você volta para a fase 1 com filmes aleatórios!</span>
+                </button>
+              </div>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
       {/* Background Glows */}
       <div className="fixed top-0 left-1/4 w-[500px] h-[500px] bg-[#a9f442]/10 rounded-full blur-[150px] pointer-events-none -translate-x-1/2"></div>
       <div className="fixed bottom-0 right-1/4 w-[600px] h-[600px] bg-[#a9f442]/5 rounded-full blur-[150px] pointer-events-none translate-x-1/2"></div>
@@ -20,7 +81,6 @@ export default function HomeScreen({ onSelect }: { onSelect: (category: string) 
           <div className="max-w-[1400px] mx-auto px-4 h-20 flex items-center justify-between">
             <div className="flex items-center gap-3">
               <img src="/dioquizlogo.png" alt="Dioquiz" className="h-10 md:h-12 w-auto object-contain drop-shadow-[0_0_10px_rgba(169,244,66,0.3)]" />
-              <span className="text-xl md:text-2xl font-black tracking-widest uppercase text-white hidden sm:block">Dioquiz</span>
             </div>
             <nav className="hidden md:flex gap-6">
               <button className="text-sm font-bold uppercase tracking-widest text-slate-400 hover:text-[#a9f442] transition-colors">Como Jogar</button>
@@ -71,18 +131,18 @@ export default function HomeScreen({ onSelect }: { onSelect: (category: string) 
                   icon={<img src="/marvellogo.png" alt="Marvel" className="w-16 h-auto object-contain" />}
                   title="MUNDO MARVEL"
                   videoBg="/marvel-bg.mp4"
-                  onClick={() => onSelect('marvel')}
+                  onClick={() => setSelectedCategoryForDiff('marvel')}
                 />
                 <CategoryButton 
                   icon={<img src="/disneylogo.png" alt="Disney" className="w-16 h-auto object-contain" />}
                   title="MUNDO DISNEY"
                   videoBg="/abedisney.mp4"
-                  onClick={() => onSelect('disney')}
+                  onClick={() => setSelectedCategoryForDiff('disney')}
                 />
                 <CategoryButton 
                   icon={<MonitorPlay size={40} className="text-[#a9f442]" />}
                   title="CLÁSSICOS"
-                  onClick={() => onSelect('classicos')}
+                  onClick={() => setSelectedCategoryForDiff('classicos')}
                 />
               </div>
             </motion.div>

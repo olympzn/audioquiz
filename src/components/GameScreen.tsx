@@ -1,18 +1,21 @@
 import { useState, useEffect } from 'react';
-import { Film, Info, ArrowLeft } from 'lucide-react';
+import { Info, ArrowLeft } from 'lucide-react';
 import AudioPlayer from './AudioPlayer';
 import MultipleChoice from './MultipleChoice';
+import TextInputGuess from './TextInputGuess';
 import ResultModal from './ResultModal';
 import { gameLevels } from '../data/gameData';
-import { GameStatus } from '../types';
+import { GameStatus, Difficulty, Level } from '../types';
 import { motion, AnimatePresence } from 'motion/react';
 import confetti from 'canvas-confetti';
 
 export default function GameScreen({ 
   category, 
+  difficulty,
   onBack 
 }: { 
   category: string; 
+  difficulty: Difficulty;
   onBack: () => void;
 }) {
   const [levelIndex, setLevelIndex] = useState(0);
@@ -24,6 +27,19 @@ export default function GameScreen({
   const [showInterstitial, setShowInterstitial] = useState(false);
   const [adTimer, setAdTimer] = useState(5);
   const [adSequence, setAdSequence] = useState(1);
+  const [isLoading, setIsLoading] = useState(false);
+  const [activeLevels, setActiveLevels] = useState<Level[]>([]);
+  const [shake, setShake] = useState(false);
+
+  useEffect(() => {
+    const baseLevels = gameLevels[category] || [];
+    if (difficulty === 'dificil') {
+      setActiveLevels([...baseLevels].sort(() => Math.random() - 0.5));
+    } else {
+      setActiveLevels(baseLevels);
+    }
+    setLevelIndex(0);
+  }, [category, difficulty]);
 
   useEffect(() => {
     let timer: NodeJS.Timeout;
@@ -33,8 +49,11 @@ export default function GameScreen({
     return () => clearTimeout(timer);
   }, [showInterstitial, adTimer]);
 
-  const levels = gameLevels[category] || [];
-  const currentLevel = levels[levelIndex];
+  const currentLevel = activeLevels[levelIndex];
+
+  const allCategoryMovies = Array.from(new Set(
+    (gameLevels[category] || []).flatMap(level => level.options || [])
+  ));
 
   const handleGuess = (guess: string) => {
     if (status !== 'playing' || !currentLevel) return;
@@ -42,7 +61,9 @@ export default function GameScreen({
     const newGuesses = [...guesses, guess];
     setGuesses(newGuesses);
 
-    if (guess === currentLevel.movieTitle) {
+    const isCorrect = guess.toLowerCase().trim() === currentLevel.movieTitle.toLowerCase().trim();
+
+    if (isCorrect) {
       setStatus('won');
       setTotalScore(prev => prev + 100);
       
@@ -64,7 +85,12 @@ export default function GameScreen({
         confetti(Object.assign({}, defaults, { particleCount, origin: { x: randomInRange(0.7, 0.9), y: Math.random() - 0.2 } }));
       }, 250);
     } else {
-      setStatus('lost');
+      if (difficulty === 'dificil') {
+        setStatus('lost');
+      } else {
+        setShake(true);
+        setTimeout(() => setShake(false), 500);
+      }
     }
   };
 
@@ -93,15 +119,27 @@ export default function GameScreen({
   };
 
   const proceedToNextLevel = () => {
-    if (status === 'won' && levelIndex < levels.length - 1) {
-      setLevelIndex(prev => prev + 1);
-    } else if (status === 'won') {
-      setLevelIndex(0);
-    }
-    
-    setGuesses([]);
-    setStatus('playing');
+    setIsLoading(true);
     setShowInterstitial(false);
+
+    setTimeout(() => {
+      if (status === 'won' && levelIndex < activeLevels.length - 1) {
+        setLevelIndex(prev => prev + 1);
+      } else if (status === 'won') {
+        setLevelIndex(0);
+        if (difficulty === 'dificil') {
+          setActiveLevels([...activeLevels].sort(() => Math.random() - 0.5));
+        }
+      } else if (status === 'lost' && difficulty === 'dificil') {
+        setLevelIndex(0);
+        setActiveLevels([...activeLevels].sort(() => Math.random() - 0.5));
+        setTotalScore(0);
+      }
+      
+      setGuesses([]);
+      setStatus('playing');
+      setIsLoading(false);
+    }, 2000);
   };
 
   if (!currentLevel) {
@@ -109,6 +147,26 @@ export default function GameScreen({
       <div className="min-h-screen flex flex-col items-center justify-center text-white bg-slate-950">
         <h2 className="text-2xl mb-4">Em breve: Mais níveis para esta categoria!</h2>
         <button onClick={onBack} className="px-6 py-3 bg-indigo-600 rounded-xl font-bold">Voltar</button>
+      </div>
+    );
+  }
+
+  if (isLoading) {
+    return (
+      <div className="min-h-screen flex flex-col items-center justify-center text-white bg-[#10141a] relative overflow-hidden font-sans">
+        {/* Background Glows */}
+        <div className="fixed top-1/4 left-0 w-[400px] h-[400px] bg-[#a9f442]/20 rounded-full blur-[140px] pointer-events-none -translate-x-1/2 z-0"></div>
+        <div className="fixed bottom-1/4 right-0 w-[500px] h-[500px] bg-[#a9f442]/10 rounded-full blur-[140px] pointer-events-none translate-x-1/3 z-0"></div>
+        
+        <motion.div 
+          initial={{ opacity: 0, scale: 0.8 }}
+          animate={{ opacity: 1, scale: 1 }}
+          className="flex flex-col items-center z-10"
+        >
+          <div className="w-16 h-16 border-4 border-[#1a2027] border-t-[#a9f442] rounded-full animate-spin mb-6"></div>
+          <h2 className="text-2xl font-black uppercase tracking-widest text-[#a9f442] animate-pulse">Carregando Fase...</h2>
+          <p className="text-slate-400 mt-2 text-sm uppercase tracking-wider font-bold">Prepare-se</p>
+        </motion.div>
       </div>
     );
   }
@@ -129,9 +187,6 @@ export default function GameScreen({
             >
               <ArrowLeft size={20} />
             </button>
-            <div className="bg-[#a9f442]/10 p-2 rounded-xl text-[#a9f442] hidden sm:block border border-[#a9f442]/20">
-              <Film size={24} />
-            </div>
             <img src="/dioquizlogo.png" alt="Dioquiz" className="h-8 w-auto hidden sm:block object-contain drop-shadow-[0_0_8px_rgba(169,244,66,0.2)]" />
             {category === 'marvel' ? (
               <img src="/marvellogo.png" alt="Marvel" className="h-6 w-auto sm:ml-2 object-contain" />
@@ -172,32 +227,46 @@ export default function GameScreen({
           <span className="text-[#a9f442] font-black tracking-widest uppercase text-lg mt-1">Anúncio</span>
         </aside>
 
-        <main className="w-full max-w-2xl flex flex-col items-center shrink">
+        <motion.main 
+          animate={shake ? { x: [-10, 10, -10, 10, 0] } : {}}
+          transition={{ duration: 0.4 }}
+          className="w-full max-w-2xl flex flex-col items-center shrink"
+        >
           <div className="mb-8 text-center">
             <span className="inline-block px-4 py-1.5 bg-[#a9f442]/10 text-[#a9f442] text-sm font-bold rounded-full border border-[#a9f442]/20 mb-4 tracking-widest uppercase">
-              Nível {levelIndex + 1} de {levels.length}
+              Nível {levelIndex + 1} de {activeLevels.length}
             </span>
             <p className="text-slate-400 max-w-md mx-auto text-lg leading-relaxed mb-2 uppercase tracking-wide">
               Ouça o áudio e selecione a alternativa correta
             </p>
           </div>
 
-          <AudioPlayer src={currentLevel.audioUrl} />
+          <AudioPlayer src={currentLevel.audioUrl} shouldPause={status !== 'playing'} />
           
-          <MultipleChoice 
-            options={currentLevel.options || []}
-            onGuess={handleGuess} 
-            disabled={status !== 'playing'} 
-            guesses={guesses}
-            answer={currentLevel.movieTitle}
-          />
+          {difficulty === 'facil' ? (
+            <MultipleChoice 
+              options={currentLevel.options || []}
+              onGuess={handleGuess} 
+              disabled={status !== 'playing'} 
+              guesses={guesses}
+              answer={currentLevel.movieTitle}
+            />
+          ) : (
+            <TextInputGuess
+              onGuess={handleGuess}
+              disabled={status !== 'playing'}
+              guesses={guesses}
+              answer={currentLevel.movieTitle}
+              suggestions={allCategoryMovies}
+            />
+          )}
 
           {/* Espaço para Anúncio Mobile (Base) */}
           <div className="flex lg:hidden w-full h-[100px] bg-[#1a2027]/80 border border-slate-700/50 rounded-2xl flex-col items-center justify-center shrink-0 mt-8 mb-4">
             <span className="text-slate-500 font-bold tracking-widest uppercase text-xs">Espaço para</span>
             <span className="text-[#a9f442] font-black tracking-widest uppercase text-lg mt-1">Anúncio</span>
           </div>
-        </main>
+        </motion.main>
 
         {/* Espaço para Anúncio Direito */}
         <aside className="hidden lg:flex w-[300px] h-[600px] bg-[#1a2027]/80 border border-slate-700/50 rounded-3xl flex-col items-center justify-center shrink-0 lg:sticky top-24">
@@ -207,7 +276,7 @@ export default function GameScreen({
       </div>
 
       <AnimatePresence>
-        {status !== 'playing' && (
+        {status !== 'playing' && !showInterstitial && (
           <ResultModal 
             status={status}
             answer={currentLevel.movieTitle}

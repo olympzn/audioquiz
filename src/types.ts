@@ -1,3 +1,5 @@
+export type Difficulty = 'facil' | 'medio' | 'dificil';
+
 export interface Level {
   id: string;
   movieTitle: string;

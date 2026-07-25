@@ -225,37 +225,37 @@ export const gameLevels: Record<string, Level[]> = {
     {
       id: 'd1',
       movieTitle: 'O Rei Leão',
-      options: ['Aladdin', 'Tarzan', 'Mogli: O Menino Lobo', 'O Rei Leão', 'Irmão Urso'],
-      audioUrl: '',
-      videoUrl: '',
+      options: ['A Princesa e o Sapo', 'Tarzan', 'Mogli: O Menino Lobo', 'O Rei Leão', 'Irmão Urso'],
+      audioUrl: 'dmd1.mp3',
+      videoUrl: 'dmd1.mp4',
     },
     {
       id: 'd2',
       movieTitle: 'Toy Story',
       options: ['Monstros S.A.', 'Vida de Inseto', 'Toy Story', 'Os Incríveis', 'Procurando Nemo'],
-      audioUrl: '',
-      videoUrl: '',
+      audioUrl: 'dmd2.mp3',
+      videoUrl: 'dmd2.mp4',
     },
     {
       id: 'd3',
       movieTitle: 'Procurando Nemo',
-      options: ['A Pequena Sereia', 'Procurando Nemo', 'Moana', 'O Espanta Tubarões', 'Lilo & Stitch'],
-      audioUrl: '',
-      videoUrl: '',
+      options: ['A Pequena Sereia', 'Procurando Nemo', 'Moana', 'O Espanta Tubarões', 'Tarzan'],
+      audioUrl: 'dmd3.mp3',
+      videoUrl: 'dmd3.mp4',
     },
     {
       id: 'd4',
       movieTitle: 'Divertida Mente',
       options: ['Zootopia', 'Up: Altas Aventuras', 'Viva: A Vida é uma Festa', 'Divertida Mente', 'Soul'],
-      audioUrl: '',
-      videoUrl: '',
+      audioUrl: 'dmd4.mp3',
+      videoUrl: 'dmd4.mp4',
     },
     {
       id: 'd5',
-      movieTitle: 'Shrek', // Embora seja Dreamworks, muitas pessoas associam! Você pode trocar se quiser.
-      options: ['A Era do Gelo', 'Madagascar', 'Shrek', 'Enrolados', 'A Princesa e o Sapo'],
-      audioUrl: '',
-      videoUrl: '',
+      movieTitle: 'Vida de Inseto', 
+      options: ['Toy Story 5', 'Carros', 'Vida de Inseto', 'Enrolados', 'A Princesa e o Sapo'],
+      audioUrl: 'dmd5.mp3',
+      videoUrl: 'dmd5.mp4',
     }
   ]
 };

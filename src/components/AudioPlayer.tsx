@@ -1,12 +1,13 @@
 import { useState, useRef, useEffect } from 'react';
-import { Play, Pause, Volume2, AlertCircle } from 'lucide-react';
+import { Play, Pause, Volume2, VolumeX, AlertCircle } from 'lucide-react';
 import { motion } from 'motion/react';
 
-export default function AudioPlayer({ src }: { src: string }) {
+export default function AudioPlayer({ src, shouldPause }: { src: string, shouldPause?: boolean }) {
   const [isPlaying, setIsPlaying] = useState(false);
   const [error, setError] = useState(false);
   const [currentTime, setCurrentTime] = useState(0);
   const [duration, setDuration] = useState(0);
+  const [volume, setVolume] = useState(1);
   const audioRef = useRef<HTMLAudioElement>(null);
 
   useEffect(() => {
@@ -15,6 +16,21 @@ export default function AudioPlayer({ src }: { src: string }) {
     setDuration(0);
     setError(false);
   }, [src]);
+
+  useEffect(() => {
+    if (shouldPause && isPlaying) {
+      if (audioRef.current) {
+        audioRef.current.pause();
+      }
+      setIsPlaying(false);
+    }
+  }, [shouldPause, isPlaying]);
+
+  useEffect(() => {
+    if (audioRef.current) {
+      audioRef.current.volume = volume;
+    }
+  }, [volume]);
 
   const togglePlay = () => {
     if (!src) {
@@ -89,8 +105,25 @@ export default function AudioPlayer({ src }: { src: string }) {
       </button>
 
       {src && (
-        <div className="text-[#a9f442] font-mono text-sm tracking-widest bg-[#10141a] px-4 py-1.5 rounded-full border border-slate-700/50 shadow-inner">
-          {formatTime(currentTime)} / {formatTime(duration)}
+        <div className="flex flex-col items-center w-full gap-4 mt-2">
+          <div className="text-[#a9f442] font-mono text-sm tracking-widest bg-[#10141a] px-4 py-1.5 rounded-full border border-slate-700/50 shadow-inner">
+            {formatTime(currentTime)} / {formatTime(duration)}
+          </div>
+          
+          <div className="flex items-center w-full max-w-[200px] gap-3 bg-[#10141a] px-4 py-2 rounded-full border border-slate-700/50">
+            <button onClick={() => setVolume(volume === 0 ? 1 : 0)} className="text-slate-400 hover:text-[#a9f442] transition-colors shrink-0">
+              {volume === 0 ? <VolumeX size={16} /> : <Volume2 size={16} />}
+            </button>
+            <input 
+              type="range" 
+              min="0" 
+              max="1" 
+              step="0.01" 
+              value={volume}
+              onChange={(e) => setVolume(parseFloat(e.target.value))}
+              className="w-full h-1.5 bg-slate-700 rounded-lg appearance-none cursor-pointer accent-[#a9f442]"
+            />
+          </div>
         </div>
       )}
 
