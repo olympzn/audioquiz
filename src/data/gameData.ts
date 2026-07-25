@@ -49,8 +49,8 @@ export const gameLevels: Record<string, Level[]> = {
       id: 'm1',
       movieTitle: 'Homem de Ferro',
       options: ['Capitão América: O Primeiro Vingador', 'Homem de Ferro', 'Thor', 'O Incrível Hulk', 'Os Vingadores'],
-      audioUrl: '',
-      videoUrl: '',
+      audioUrl: 'mmv1.mp3',
+      videoUrl: 'mmv1.mp4',
     },
     {
       id: 'm2',

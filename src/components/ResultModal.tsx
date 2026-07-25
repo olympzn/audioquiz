@@ -19,13 +19,20 @@ export default function ResultModal({
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
-      className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-[#10141a]/90 backdrop-blur-md"
+      className="fixed inset-0 z-50 flex flex-col lg:flex-row items-center justify-center p-4 gap-4 lg:gap-8 bg-[#10141a]/90 backdrop-blur-md overflow-y-auto"
     >
+      {status === 'won' && (
+        <aside className="hidden lg:flex w-[250px] xl:w-[300px] h-[500px] bg-[#1a2027]/80 border border-slate-700/50 rounded-3xl flex-col items-center justify-center shrink-0 shadow-xl z-0">
+          <span className="text-slate-500 font-bold tracking-widest uppercase text-xs">Espaço para</span>
+          <span className="text-[#a9f442] font-black tracking-widest uppercase text-lg mt-1">Anúncio</span>
+        </aside>
+      )}
+
       <motion.div 
         initial={{ scale: 0.9, y: 20 }}
         animate={{ scale: 1, y: 0 }}
         exit={{ scale: 0.9, y: 20, opacity: 0 }}
-        className="bg-[#1a2027] border border-slate-700/50 rounded-3xl p-8 w-full max-w-lg shadow-2xl flex flex-col items-center text-center relative overflow-hidden"
+        className="bg-[#1a2027] border border-slate-700/50 rounded-3xl p-8 w-full max-w-lg shadow-2xl flex flex-col items-center text-center relative overflow-hidden z-10 shrink-0 my-8 lg:my-0"
       >
         <div className={`absolute top-0 left-0 w-full h-2 bg-gradient-to-r opacity-80 ${status === 'won' ? 'from-[#a9f442] to-[#80c829]' : 'from-rose-500 to-orange-500'}`} />
 
@@ -75,6 +82,13 @@ export default function ResultModal({
           {status === 'won' ? 'Próxima Frase' : 'Tentar Novamente'}
         </button>
       </motion.div>
+
+      {status === 'won' && (
+        <aside className="hidden lg:flex w-[250px] xl:w-[300px] h-[500px] bg-[#1a2027]/80 border border-slate-700/50 rounded-3xl flex-col items-center justify-center shrink-0 shadow-xl z-0">
+          <span className="text-slate-500 font-bold tracking-widest uppercase text-xs">Espaço para</span>
+          <span className="text-[#a9f442] font-black tracking-widest uppercase text-lg mt-1">Anúncio</span>
+        </aside>
+      )}
     </motion.div>
   )
 }
