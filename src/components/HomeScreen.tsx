@@ -1,16 +1,34 @@
-import React, { useState } from 'react';
-import { Film, Swords, Wand2, MonitorPlay, ArrowUpRight, Volume2, HelpCircle, CheckCircle2, X } from 'lucide-react';
+import React, { useState, useEffect } from 'react';
+import { Film, Swords, Wand2, MonitorPlay, ArrowUpRight, Volume2, HelpCircle, CheckCircle2, X, Play } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
-import { Difficulty } from '../types';
+import { Difficulty, Checkpoint } from '../types';
 
-export default function HomeScreen({ onSelect }: { onSelect: (category: string, difficulty: Difficulty) => void }) {
+export default function HomeScreen({ onSelect }: { onSelect: (category: string, difficulty: Difficulty, isContinue?: boolean) => void }) {
   const currentYear = new Date().getFullYear();
   const [selectedCategoryForDiff, setSelectedCategoryForDiff] = useState<string | null>(null);
+  const [savedCheckpoint, setSavedCheckpoint] = useState<Checkpoint | null>(null);
+
+  useEffect(() => {
+    try {
+      const stored = localStorage.getItem('dioquiz_checkpoint');
+      if (stored) {
+        setSavedCheckpoint(JSON.parse(stored));
+      }
+    } catch (e) {
+      console.error('Failed to load checkpoint', e);
+    }
+  }, []);
 
   const handleDifficultySelect = (diff: Difficulty) => {
     if (selectedCategoryForDiff) {
-      onSelect(selectedCategoryForDiff, diff);
+      onSelect(selectedCategoryForDiff, diff, false);
       setSelectedCategoryForDiff(null);
+    }
+  };
+
+  const handleContinue = () => {
+    if (savedCheckpoint) {
+      onSelect(savedCheckpoint.category, savedCheckpoint.difficulty, true);
     }
   };
 
@@ -105,9 +123,21 @@ export default function HomeScreen({ onSelect }: { onSelect: (category: string, 
             <h1 className="text-4xl md:text-5xl lg:text-6xl font-black tracking-widest text-white uppercase mb-6 drop-shadow-[0_0_20px_rgba(169,244,66,0.2)]">
               Descubra o Filme <br/> <span className="text-[#a9f442]">Pelo Som</span>
             </h1>
-            <p className="text-slate-400 text-lg md:text-xl mx-auto uppercase tracking-widest font-medium">
+            <p className="text-slate-400 text-lg md:text-xl mx-auto uppercase tracking-widest font-medium mb-8">
               Teste seus conhecimentos cinematográficos!
             </p>
+
+            {savedCheckpoint && (
+              <motion.button
+                initial={{ opacity: 0, scale: 0.9 }}
+                animate={{ opacity: 1, scale: 1 }}
+                onClick={handleContinue}
+                className="mx-auto flex items-center justify-center gap-3 bg-[#a9f442] text-[#10141a] px-8 py-4 rounded-xl font-black uppercase tracking-widest text-lg hover:bg-[#9de43c] transition-all shadow-[0_0_20px_rgba(169,244,66,0.3)] hover:shadow-[0_0_30px_rgba(169,244,66,0.5)] active:scale-95"
+              >
+                <Play size={24} className="fill-current" />
+                Continuar Jogo ({savedCheckpoint.category})
+              </motion.button>
+            )}
           </motion.div>
 
         <div className="w-full flex flex-col lg:flex-row items-center lg:items-start justify-center gap-8 mt-4">
@@ -146,12 +176,6 @@ export default function HomeScreen({ onSelect }: { onSelect: (category: string, 
                 />
               </div>
             </motion.div>
-
-            {/* Espaço para Anúncio Mobile (Base) */}
-            <div className="flex lg:hidden w-full h-[250px] bg-[#1a2027]/80 border border-slate-700/50 rounded-2xl flex-col items-center justify-center shrink-0 mt-4 mb-4">
-              <span className="text-slate-500 font-bold tracking-widest uppercase text-xs">Espaço para</span>
-              <span className="text-[#a9f442] font-black tracking-widest uppercase text-lg mt-1">Anúncio</span>
-            </div>
           </main>
 
           {/* Espaço para Anúncio Direito */}
@@ -239,6 +263,12 @@ export default function HomeScreen({ onSelect }: { onSelect: (category: string, 
 
           </div>
         </motion.div>
+
+        {/* Espaço para Anúncio Mobile (Base) - Movido para abaixo de Como Funciona */}
+        <div className="flex lg:hidden w-full max-w-4xl h-[250px] bg-[#1a2027]/80 border border-slate-700/50 rounded-2xl flex-col items-center justify-center shrink-0 mt-8 mb-4">
+          <span className="text-slate-500 font-bold tracking-widest uppercase text-xs">Espaço para</span>
+          <span className="text-[#a9f442] font-black tracking-widest uppercase text-lg mt-1">Anúncio</span>
+        </div>
       </div>
       </div>
 

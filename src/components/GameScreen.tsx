@@ -12,10 +12,12 @@ import confetti from 'canvas-confetti';
 export default function GameScreen({ 
   category, 
   difficulty,
+  loadCheckpoint,
   onBack 
 }: { 
   category: string; 
   difficulty: Difficulty;
+  loadCheckpoint?: boolean;
   onBack: () => void;
 }) {
   const [levelIndex, setLevelIndex] = useState(0);
@@ -32,14 +34,52 @@ export default function GameScreen({
   const [shake, setShake] = useState(false);
 
   useEffect(() => {
-    const baseLevels = gameLevels[category] || [];
-    if (difficulty === 'dificil') {
-      setActiveLevels([...baseLevels].sort(() => Math.random() - 0.5));
-    } else {
-      setActiveLevels(baseLevels);
+    let loaded = false;
+    if (loadCheckpoint) {
+      try {
+        const stored = localStorage.getItem('dioquiz_checkpoint');
+        if (stored) {
+          const cp = JSON.parse(stored);
+          if (cp.category === category && cp.difficulty === difficulty) {
+            setActiveLevels(cp.activeLevels);
+            setLevelIndex(cp.levelIndex);
+            setTotalScore(cp.totalScore);
+            setLevelsPassed(cp.levelsPassed);
+            loaded = true;
+          }
+        }
+      } catch (e) {
+        console.error('Failed to load checkpoint', e);
+      }
     }
-    setLevelIndex(0);
-  }, [category, difficulty]);
+
+    if (!loaded) {
+      const baseLevels = gameLevels[category] || [];
+      if (difficulty === 'dificil') {
+        setActiveLevels([...baseLevels].sort(() => Math.random() - 0.5));
+      } else {
+        setActiveLevels(baseLevels);
+      }
+      setLevelIndex(0);
+      setTotalScore(0);
+      setLevelsPassed(0);
+    }
+  }, [category, difficulty, loadCheckpoint]);
+
+  // Save checkpoint whenever we reach a new level (status is 'playing' and levelIndex changes)
+  useEffect(() => {
+    if (activeLevels.length > 0 && status === 'playing') {
+      const checkpoint = {
+        category,
+        difficulty,
+        levelIndex,
+        totalScore,
+        levelsPassed,
+        activeLevels
+      };
+      localStorage.setItem('dioquiz_checkpoint', JSON.stringify(checkpoint));
+    }
+  }, [category, difficulty, levelIndex, totalScore, levelsPassed, activeLevels, status]);
 
   useEffect(() => {
     let timer: NodeJS.Timeout;
@@ -352,10 +392,26 @@ export default function GameScreen({
             >
               <div className="absolute top-0 left-0 w-full h-1 bg-[#a9f442] opacity-80" />
               
-              <div className="w-full h-[250px] bg-[#10141a]/50 border border-slate-700/50 border-dashed rounded-2xl flex flex-col items-center justify-center mb-6">
-                <span className="text-slate-500 font-bold tracking-widest uppercase text-xs mb-2">Espaço para</span>
-                <span className="text-[#a9f442] font-black tracking-widest uppercase text-2xl">Anúncio {adSequence} de 2</span>
-                <span className="text-slate-500 text-sm mt-4">Pausa patrocinada</span>
+              <div className="w-full h-[250px] bg-[#10141a]/50 border border-slate-700/50 border-dashed rounded-2xl flex flex-col items-center justify-center mb-6 relative overflow-hidden group">
+                {adSequence === 2 ? (
+                  <>
+                    <img src="/anuncio-interstitial.jpg" alt="Anúncio" className="absolute inset-0 w-full h-full object-contain" />
+                    <a 
+                      href="https://www.instagram.com/app.dioquiz?igsh=MWpqZ3Q4eHV1bjl5OA%3D%3D&utm_source=qr" 
+                      target="_blank" 
+                      rel="noopener noreferrer"
+                      className="absolute bottom-4 bg-[#a9f442] text-[#10141a] px-6 py-2 rounded-xl font-bold uppercase tracking-widest text-sm hover:bg-[#9de43c] transition-colors shadow-lg z-10"
+                    >
+                      Saiba Mais
+                    </a>
+                  </>
+                ) : (
+                  <>
+                    <span className="text-slate-500 font-bold tracking-widest uppercase text-xs mb-2">Espaço para</span>
+                    <span className="text-[#a9f442] font-black tracking-widest uppercase text-2xl">Anúncio {adSequence} de 2</span>
+                    <span className="text-slate-500 text-sm mt-4">Pausa patrocinada</span>
+                  </>
+                )}
               </div>
 
               <h3 className="text-2xl font-black mb-2 text-white uppercase tracking-widest">
