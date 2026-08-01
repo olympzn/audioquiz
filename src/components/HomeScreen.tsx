@@ -242,7 +242,7 @@ export default function HomeScreen({ onSelect }: { onSelect: (category: string, 
 
                 <div className="flex flex-col items-center gap-3">
                   <CategoryButton 
-                    icon={<MonitorPlay size={40} className="text-[#a9f442]" />}
+                    icon={<img src="/iconeclassico.png" alt="Clássicos" className="w-16 h-auto object-contain" />}
                     title="CLÁSSICOS"
                     videoBg="/fundoclassico.mp4"
                     onClick={() => {
