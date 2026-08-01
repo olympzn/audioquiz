@@ -365,6 +365,14 @@ export default function HomeScreen({ onSelect }: { onSelect: (category: string, 
             <button className="text-slate-400 hover:text-[#a9f442] text-sm transition-colors uppercase tracking-wider font-bold">
               Política de Privacidade
             </button>
+            <a 
+              href="https://www.instagram.com/app.dioquiz?igsh=MWpqZ3Q4eHV1bjl5OA%3D%3D&utm_source=qr" 
+              target="_blank" 
+              rel="noopener noreferrer"
+              className="text-slate-400 hover:text-[#a9f442] text-sm transition-colors uppercase tracking-wider font-bold"
+            >
+              Fale Conosco
+            </a>
           </div>
         </div>
       </footer>
