@@ -244,6 +244,7 @@ export default function HomeScreen({ onSelect }: { onSelect: (category: string, 
                   <CategoryButton 
                     icon={<MonitorPlay size={40} className="text-[#a9f442]" />}
                     title="CLÁSSICOS"
+                    videoBg="/fundoclassico.mp4"
                     onClick={() => {
                       if (checkpoints['classicos']) {
                         setCategoryForContinueModal('classicos');
