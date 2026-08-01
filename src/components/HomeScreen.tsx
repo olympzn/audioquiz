@@ -6,16 +6,25 @@ import { Difficulty, Checkpoint } from '../types';
 export default function HomeScreen({ onSelect }: { onSelect: (category: string, difficulty: Difficulty, isContinue?: boolean) => void }) {
   const currentYear = new Date().getFullYear();
   const [selectedCategoryForDiff, setSelectedCategoryForDiff] = useState<string | null>(null);
-  const [savedCheckpoint, setSavedCheckpoint] = useState<Checkpoint | null>(null);
+  const [categoryForContinueModal, setCategoryForContinueModal] = useState<string | null>(null);
+  const [checkpoints, setCheckpoints] = useState<Record<string, Checkpoint>>({});
 
   useEffect(() => {
     try {
-      const stored = localStorage.getItem('dioquiz_checkpoint');
-      if (stored) {
-        setSavedCheckpoint(JSON.parse(stored));
+      const cps: Record<string, Checkpoint> = {};
+      for (let i = 0; i < localStorage.length; i++) {
+        const key = localStorage.key(i);
+        if (key && key.startsWith('dioquiz_checkpoint_')) {
+          const stored = localStorage.getItem(key);
+          if (stored) {
+            const cp = JSON.parse(stored);
+            cps[cp.category] = cp;
+          }
+        }
       }
+      setCheckpoints(cps);
     } catch (e) {
-      console.error('Failed to load checkpoint', e);
+      console.error('Failed to load checkpoints', e);
     }
   }, []);
 
@@ -26,15 +35,67 @@ export default function HomeScreen({ onSelect }: { onSelect: (category: string, 
     }
   };
 
-  const handleContinue = () => {
-    if (savedCheckpoint) {
-      onSelect(savedCheckpoint.category, savedCheckpoint.difficulty, true);
+  const handleContinue = (category: string) => {
+    const cp = checkpoints[category];
+    if (cp) {
+      onSelect(cp.category, cp.difficulty, true);
     }
   };
 
   return (
     <div className="min-h-screen bg-[#0a0d12] text-slate-50 selection:bg-[#a9f442]/30 overflow-x-hidden relative font-sans flex flex-col">
       <AnimatePresence>
+        {categoryForContinueModal && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 z-[60] flex items-center justify-center p-4 bg-[#0a0d12]/90 backdrop-blur-md"
+          >
+            <motion.div
+              initial={{ scale: 0.95, opacity: 0, y: 10 }}
+              animate={{ scale: 1, opacity: 1, y: 0 }}
+              exit={{ scale: 0.95, opacity: 0, y: 10 }}
+              className="bg-[#1a2027] border border-slate-700/50 p-6 md:p-8 rounded-3xl max-w-xl w-full shadow-2xl relative overflow-hidden text-center"
+            >
+              <button 
+                onClick={() => setCategoryForContinueModal(null)}
+                className="absolute top-4 right-4 text-slate-400 hover:text-white bg-slate-800/50 p-2 rounded-full transition-colors"
+              >
+                <X size={20} />
+              </button>
+              
+              <h2 className="text-2xl font-black text-[#a9f442] uppercase tracking-widest mb-6">Jogo Salvo Encontrado</h2>
+              <p className="text-slate-300 mb-8 text-lg">
+                Você tem um jogo salvo na <span className="text-[#a9f442] font-black">Fase {checkpoints[categoryForContinueModal]?.levelsPassed + 1}</span> da categoria {categoryForContinueModal.toUpperCase()}.<br/>
+                Deseja continuar de onde parou ou iniciar um novo jogo?
+              </p>
+              
+              <div className="flex flex-col sm:flex-row gap-4 justify-center">
+                <button 
+                  onClick={() => {
+                    handleContinue(categoryForContinueModal);
+                    setCategoryForContinueModal(null);
+                  }}
+                  className="bg-[#a9f442] text-[#10141a] px-6 py-3 rounded-xl font-black uppercase tracking-widest text-sm hover:bg-[#9de43c] transition-all shadow-[0_0_20px_rgba(169,244,66,0.3)] hover:shadow-[0_0_30px_rgba(169,244,66,0.5)] active:scale-95 flex items-center justify-center gap-2"
+                >
+                  <Play size={18} className="fill-current" />
+                  Continuar
+                </button>
+                <button 
+                  onClick={() => {
+                    const cat = categoryForContinueModal;
+                    setCategoryForContinueModal(null);
+                    setSelectedCategoryForDiff(cat);
+                  }}
+                  className="bg-[#161b22] border border-slate-700 text-slate-300 hover:border-slate-500 hover:text-white px-6 py-3 rounded-xl font-bold uppercase tracking-widest text-sm transition-colors flex items-center justify-center"
+                >
+                  Novo Jogo
+                </button>
+              </div>
+            </motion.div>
+          </motion.div>
+        )}
         {selectedCategoryForDiff && (
           <motion.div
             initial={{ opacity: 0 }}
@@ -127,17 +188,7 @@ export default function HomeScreen({ onSelect }: { onSelect: (category: string, 
               Teste seus conhecimentos cinematográficos!
             </p>
 
-            {savedCheckpoint && (
-              <motion.button
-                initial={{ opacity: 0, scale: 0.9 }}
-                animate={{ opacity: 1, scale: 1 }}
-                onClick={handleContinue}
-                className="mx-auto flex items-center justify-center gap-3 bg-[#a9f442] text-[#10141a] px-8 py-4 rounded-xl font-black uppercase tracking-widest text-lg hover:bg-[#9de43c] transition-all shadow-[0_0_20px_rgba(169,244,66,0.3)] hover:shadow-[0_0_30px_rgba(169,244,66,0.5)] active:scale-95"
-              >
-                <Play size={24} className="fill-current" />
-                Continuar Jogo ({savedCheckpoint.category})
-              </motion.button>
-            )}
+
           </motion.div>
 
         <div className="w-full flex flex-col lg:flex-row items-center lg:items-start justify-center gap-8 mt-4">
@@ -157,23 +208,52 @@ export default function HomeScreen({ onSelect }: { onSelect: (category: string, 
             >
               <h2 className="text-center text-xl font-black text-[#a9f442] uppercase tracking-widest mb-8">Escolha sua Categoria</h2>
               <div className="flex flex-wrap justify-center gap-6 w-full mb-12">
-                <CategoryButton 
-                  icon={<img src="/marvellogo.png" alt="Marvel" className="w-16 h-auto object-contain" />}
-                  title="MUNDO MARVEL"
-                  videoBg="/marvel-bg.mp4"
-                  onClick={() => setSelectedCategoryForDiff('marvel')}
-                />
-                <CategoryButton 
-                  icon={<img src="/disneylogo.png" alt="Disney" className="w-16 h-auto object-contain" />}
-                  title="MUNDO DISNEY"
-                  videoBg="/abedisney.mp4"
-                  onClick={() => setSelectedCategoryForDiff('disney')}
-                />
-                <CategoryButton 
-                  icon={<MonitorPlay size={40} className="text-[#a9f442]" />}
-                  title="CLÁSSICOS"
-                  onClick={() => setSelectedCategoryForDiff('classicos')}
-                />
+                <div className="flex flex-col items-center gap-3">
+                  <CategoryButton 
+                    icon={<img src="/marvellogo.png" alt="Marvel" className="w-16 h-auto object-contain" />}
+                    title="MUNDO MARVEL"
+                    videoBg="/marvel-bg.mp4"
+                    onClick={() => {
+                      if (checkpoints['marvel']) {
+                        setCategoryForContinueModal('marvel');
+                      } else {
+                        setSelectedCategoryForDiff('marvel');
+                      }
+                    }}
+                  />
+                  
+                </div>
+
+                <div className="flex flex-col items-center gap-3">
+                  <CategoryButton 
+                    icon={<img src="/disneylogo.png" alt="Disney" className="w-16 h-auto object-contain" />}
+                    title="MUNDO DISNEY"
+                    videoBg="/abedisney.mp4"
+                    onClick={() => {
+                      if (checkpoints['disney']) {
+                        setCategoryForContinueModal('disney');
+                      } else {
+                        setSelectedCategoryForDiff('disney');
+                      }
+                    }}
+                  />
+                  
+                </div>
+
+                <div className="flex flex-col items-center gap-3">
+                  <CategoryButton 
+                    icon={<MonitorPlay size={40} className="text-[#a9f442]" />}
+                    title="CLÁSSICOS"
+                    onClick={() => {
+                      if (checkpoints['classicos']) {
+                        setCategoryForContinueModal('classicos');
+                      } else {
+                        setSelectedCategoryForDiff('classicos');
+                      }
+                    }}
+                  />
+                  
+                </div>
               </div>
             </motion.div>
           </main>

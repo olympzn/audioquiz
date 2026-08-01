@@ -37,15 +37,34 @@ export default function GameScreen({
     let loaded = false;
     if (loadCheckpoint) {
       try {
-        const stored = localStorage.getItem('dioquiz_checkpoint');
+        const stored = localStorage.getItem(`dioquiz_checkpoint_${category}`);
         if (stored) {
           const cp = JSON.parse(stored);
           if (cp.category === category && cp.difficulty === difficulty) {
-            setActiveLevels(cp.activeLevels);
-            setLevelIndex(cp.levelIndex);
-            setTotalScore(cp.totalScore);
-            setLevelsPassed(cp.levelsPassed);
-            loaded = true;
+            const baseLevels = gameLevels[category] || [];
+            const savedLevelIds = cp.activeLevels.map((l: any) => l.id);
+            
+            // Re-hydrate the levels from codebase so any changes (videos, options) are applied
+            let hydratedLevels = savedLevelIds
+              .map((id: string) => baseLevels.find(l => l.id === id))
+              .filter(Boolean) as Level[];
+              
+            // Find any new levels added to codebase after the checkpoint was saved
+            const newLevels = baseLevels.filter(l => !savedLevelIds.includes(l.id));
+            if (newLevels.length > 0) {
+              if (difficulty === 'dificil') {
+                newLevels.sort(() => Math.random() - 0.5);
+              }
+              hydratedLevels = [...hydratedLevels, ...newLevels];
+            }
+            
+            if (hydratedLevels.length > 0) {
+              setActiveLevels(hydratedLevels);
+              setLevelIndex(Math.min(cp.levelIndex, hydratedLevels.length - 1));
+              setTotalScore(cp.totalScore);
+              setLevelsPassed(cp.levelsPassed);
+              loaded = true;
+            }
           }
         }
       } catch (e) {
@@ -77,7 +96,7 @@ export default function GameScreen({
         levelsPassed,
         activeLevels
       };
-      localStorage.setItem('dioquiz_checkpoint', JSON.stringify(checkpoint));
+      localStorage.setItem(`dioquiz_checkpoint_${category}`, JSON.stringify(checkpoint));
     }
   }, [category, difficulty, levelIndex, totalScore, levelsPassed, activeLevels, status]);
 
@@ -140,7 +159,7 @@ export default function GameScreen({
         setLevelsPassed(nextPassedCount);
     }
 
-    if (status === 'won' && nextPassedCount > 0 && nextPassedCount % 3 === 0) {
+    if (status === 'won' && nextPassedCount > 0 && (nextPassedCount % 7 === 3 || nextPassedCount % 7 === 0)) {
         setAdTimer(5);
         setAdSequence(1);
         setShowInterstitial(true);
